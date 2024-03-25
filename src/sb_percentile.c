@@ -103,6 +103,36 @@ double sb_percentile_calculate(sb_percentile_t *percentile, double percent)
   return exp((i) / percentile->range_mult + percentile->range_deduct);
 }
 
+double sb_percentile_calculate_extreme_tail(sb_percentile_t *percentile, u_int64_t percent_times_100)
+{
+  unsigned long long ncur, nmax;
+  unsigned int       i;
+
+  pthread_mutex_lock(&percentile->mutex);
+
+  if (percentile->total == 0)
+  {
+    pthread_mutex_unlock(&percentile->mutex);
+    return 0.0;
+  }
+
+  memcpy(percentile->tmp, percentile->values,
+         percentile->size * sizeof(unsigned long long));
+  nmax = floor(percentile->total * percent_times_100 / 10000 + 0.5);
+
+  pthread_mutex_unlock(&percentile->mutex);
+
+  ncur = percentile->tmp[0];
+  for (i = 1; i < percentile->size; i++)
+  {
+    ncur += percentile->tmp[i];
+    if (ncur >= nmax)
+      break;
+  }
+
+  return exp((i) / percentile->range_mult + percentile->range_deduct);
+}
+
 void sb_percentile_reset(sb_percentile_t *percentile)
 {
   pthread_mutex_lock(&percentile->mutex);

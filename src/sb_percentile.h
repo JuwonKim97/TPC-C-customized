@@ -41,6 +41,8 @@ void sb_percentile_update(sb_percentile_t *percentile, double value);
 
 double sb_percentile_calculate(sb_percentile_t *percentile, double percent);
 
+double sb_percentile_calculate_extreme_tail(sb_percentile_t *percentile, u_int64_t percent_times_100);
+
 void sb_percentile_reset(sb_percentile_t *percentile);
 
 void sb_percentile_done(sb_percentile_t *percentile);

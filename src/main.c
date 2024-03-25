@@ -647,6 +647,7 @@ void alarm_handler(int signum)
   double trt[5];
   double percentile_val;
   double percentile_val99;
+  u_int64_t percentile_val9990, percentile_val9995, percentile_val9999;
 
   for( i=0; i<5; i++ ){
     s[i] = success[i];
@@ -658,11 +659,14 @@ void alarm_handler(int signum)
   time_count += PRINT_INTERVAL;
   percentile_val = sb_percentile_calculate(&local_percentile, 95);
   percentile_val99 = sb_percentile_calculate(&local_percentile, 99);
+  percentile_val9990 = sb_percentile_calculate_extreme_tail(&local_percentile, 9990);
+  percentile_val9995 = sb_percentile_calculate_extreme_tail(&local_percentile, 9995);
+  percentile_val9999 = sb_percentile_calculate_extreme_tail(&local_percentile, 9999);
   sb_percentile_reset(&local_percentile);
 //  printf("%4d, %d:%.3f|%.3f(%.3f), %d:%.3f|%.3f(%.3f), %d:%.3f|%.3f(%.3f), %d:%.3f|%.3f(%.3f), %d:%.3f|%.3f(%.3f)\n",
-  printf("%4d, trx: %d, 95%: %.3f, 99%: %.3f, max_rt: %.3f, %d|%.3f, %d|%.3f, %d|%.3f, %d|%.3f\n",
+  printf("%4d, trx: %d, 95%: %.3f, 99%: %.3f 99.90%: %.3f 99.95%: %.3f 99.99%: %.3f, max_rt: %.3f, %d|%.3f, %d|%.3f, %d|%.3f, %d|%.3f\n",
 	 time_count,
-	 ( s[0] + l[0] - prev_s[0] - prev_l[0] ), percentile_val,percentile_val99,
+	 ( s[0] + l[0] - prev_s[0] - prev_l[0] ), percentile_val,percentile_val99,percentile_val9990,percentile_val9995,percentile_val9999,
 	 (double)cur_max_rt[0],
 	 ( s[1] + l[1] - prev_s[1] - prev_l[1] ),
 	 (double)cur_max_rt[1],
